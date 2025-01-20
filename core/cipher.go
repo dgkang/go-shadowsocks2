@@ -27,9 +27,10 @@ type PacketConnCipher interface {
 var ErrCipherNotSupported = errors.New("cipher not supported")
 
 const (
-	aeadAes128Gcm        = "AEAD_AES_128_GCM"
-	aeadAes256Gcm        = "AEAD_AES_256_GCM"
-	aeadChacha20Poly1305 = "AEAD_CHACHA20_POLY1305"
+	aeadAes128Gcm         = "AEAD_AES_128_GCM"
+	aeadAes256Gcm         = "AEAD_AES_256_GCM"
+	aeadChacha20Poly1305  = "AEAD_CHACHA20_POLY1305"
+	aeadXChacha20Poly1305 = "AEAD_XCHACHA20_POLY1305"
 )
 
 // List of AEAD ciphers: key size in bytes and constructor
@@ -37,9 +38,10 @@ var aeadList = map[string]struct {
 	KeySize int
 	New     func([]byte) (shadowaead.Cipher, error)
 }{
-	aeadAes128Gcm:        {16, shadowaead.AESGCM},
-	aeadAes256Gcm:        {32, shadowaead.AESGCM},
-	aeadChacha20Poly1305: {32, shadowaead.Chacha20Poly1305},
+	aeadAes128Gcm:         {16, shadowaead.AESGCM},
+	aeadAes256Gcm:         {32, shadowaead.AESGCM},
+	aeadChacha20Poly1305:  {32, shadowaead.Chacha20Poly1305},
+	aeadXChacha20Poly1305: {32, shadowaead.XChacha20Poly1305},
 }
 
 // ListCipher returns a list of available cipher names sorted alphabetically.
@@ -61,6 +63,10 @@ func PickCipher(name string, key []byte, password string) (Cipher, error) {
 		return &dummy{}, nil
 	case "CHACHA20-IETF-POLY1305":
 		name = aeadChacha20Poly1305
+
+	case "XCHACHA20-IETF-POLY1305":
+		name = aeadXChacha20Poly1305
+
 	case "AES-128-GCM":
 		name = aeadAes128Gcm
 	case "AES-256-GCM":
